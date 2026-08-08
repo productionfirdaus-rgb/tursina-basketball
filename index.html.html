@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Klub Bola Basket</title>
+    <link id="dynamic-favicon" rel="icon" href="" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // MASUKKAN URL GOOGLE APPS SCRIPT WEB APP ANDA DI SINI
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBWzdATuWIto819pH2INfENRgR20OUtyhIqtJ0Ne-bco7yO_-RpxOAzKi-1oydy4Zs5A/exec";
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-blue-900 text-white shadow-md sticky top-0 z-50 border-b border-blue-800">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 overflow-hidden">
+                    <img id="header-icon" src="" class="w-full h-full object-contain" alt="Logo">
+                </div>
+                <div>
+                    <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white">TURSINA BASKETBALL</h1>
+                    <p class="text-[10px] sm:text-xs text-blue-200">Portal Resmi Tim Basket</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium items-center">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn text-yellow-400 font-semibold transition hover:text-white">Dashboard</button>
+                <button onclick="switchTab('team')" id="nav-team" class="nav-btn text-white transition hover:text-white">Pelatih & Staf</button>
+                <button onclick="switchTab('register')" id="nav-register" class="nav-btn text-white transition hover:text-white">Pendaftaran</button>
+                <button onclick="switchTab('login')" id="nav-login" class="nav-btn text-white transition hover:text-white">Login Atlet</button>
+            </nav>
+        </div>
+        <div class="md:hidden flex overflow-x-auto space-x-4 px-4 py-2 bg-blue-950 text-xs font-medium scrollbar-none">
+            <button onclick="switchTab('dashboard')" id="nav-m-dashboard" class="nav-btn text-yellow-400 font-semibold whitespace-nowrap">Dashboard</button>
+            <button onclick="switchTab('team')" id="nav-m-team" class="nav-btn text-white whitespace-nowrap">Staf</button>
+            <button onclick="switchTab('register')" id="nav-m-register" class="nav-btn text-white whitespace-nowrap">Daftar</button>
+            <button onclick="switchTab('login')" id="nav-m-login" class="nav-btn text-white whitespace-nowrap">Login</button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+
+        <!-- TAB DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content active space-y-4 sm:space-y-6">
+            <div class="bg-gradient-to-r from-blue-800 to-indigo-900 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-white shadow-lg flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 text-blue-700 opacity-20 text-7xl sm:text-9xl pointer-events-none"><i class="fa-solid fa-basketball"></i></div>
+                <div class="relative z-10 text-center md:text-left mb-4 md:mb-0">
+                    <span class="bg-yellow-400 text-blue-950 text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-wider">Official Portal</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-1 sm:mb-2">Portal Klub Basket</h2>
+                    <p class="text-blue-100 max-w-xl text-xs sm:text-sm">Data atlet, level kelas, dan status keanggotaan tersinkronisasi otomatis secara real-time.</p>
+                </div>
+                <div class="relative z-10">
+                    <button onclick="switchTab('register')" class="bg-yellow-400 text-blue-950 font-bold px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:bg-yellow-300 transition text-xs sm:text-sm">Daftar Jadi Atlet</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                <div class="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="bg-blue-50 text-blue-600 p-3 sm:p-4 rounded-xl text-xl sm:text-2xl"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <p class="text-slate-500 text-[10px] sm:text-xs font-medium uppercase tracking-wider">Total Atlet Aktif</p>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-800" id="stat-total-atlet">Memuat...</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                    <div class="bg-blue-50 text-blue-600 p-3 sm:p-4 rounded-xl text-xl sm:text-2xl"><i class="fa-solid fa-person-chalkboard"></i></div>
+                    <div>
+                        <p class="text-slate-500 text-[10px] sm:text-xs font-medium uppercase tracking-wider">Pelatih & Staf</p>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-800" id="stat-total-staf">Memuat...</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4 sm:col-span-2 lg:col-span-1">
+                    <div class="bg-yellow-50 text-yellow-600 p-3 sm:p-4 rounded-xl text-xl sm:text-2xl"><i class="fa-solid fa-layer-group"></i></div>
+                    <div>
+                        <p class="text-slate-500 text-[10px] sm:text-xs font-medium uppercase tracking-wider">Level Kelas</p>
+                        <h3 class="text-xs font-bold text-slate-800">Newcomer, Lower, Upper, JHS</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 sm:mb-6">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800">Direktori Atlet Resmi Terverifikasi</h3>
+                    <button onclick="loadPublicData()" class="bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl hover:bg-slate-200 transition"><i class="fa-solid fa-rotate mr-1.5"></i>Segarkan Data</button>
+                </div>
+                <div id="atlet-grouped-container" class="space-y-4 sm:space-y-6">
+                    <p class="p-4 text-center text-slate-400 text-sm">Mengambil data...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB PELATIH & STAF -->
+        <section id="tab-team" class="tab-content space-y-4 sm:space-y-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Jajaran Pelatih & Staf Klub</h2>
+            <div id="staf-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <p class="text-slate-500 text-sm">Memuat data staf...</p>
+            </div>
+        </section>
+
+        <!-- TAB PENDAFTARAN ATLET -->
+        <section id="tab-register" class="tab-content space-y-4 max-w-2xl mx-auto bg-white p-5 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Formulir Pendaftaran Atlet Baru</h2>
+                <p class="text-slate-500 text-xs sm:text-sm">Pilih kelas Anda (Sistem otomatis mengelompokkan level: Kelas 1-3 Newcomer, Kelas 4-6 Upper, Kelas 7-9 JHS).</p>
+            </div>
+            
+            <div id="reg-alert" class="hidden p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium"></div>
+
+            <form id="form-pendaftaran" onsubmit="handleRegister(event)" class="space-y-3 sm:space-y-4">
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nama Lengkap Atlet</label>
+                    <input type="text" id="reg-nama" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tempat, Tanggal Lahir</label>
+                    <input type="text" id="reg-ttl" placeholder="Contoh: Banyuwangi, 15-08-2018" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kategori Usia / Kelas</label>
+                    <select id="reg-kategori" class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none font-semibold bg-white cursor-pointer relative z-50">
+                        <option value="Kelas 1">Kelas 1 (Newcomer)</option>
+                        <option value="Kelas 2">Kelas 2 (Newcomer)</option>
+                        <option value="Kelas 3">Kelas 3 (Newcomer)</option>
+                        <option value="Kelas 4">Kelas 4 (Upper)</option>
+                        <option value="Kelas 5">Kelas 5 (Upper)</option>
+                        <option value="Kelas 6">Kelas 6 (Upper)</option>
+                        <option value="Kelas 7">Kelas 7 (JHS)</option>
+                        <option value="Kelas 8">Kelas 8 (JHS)</option>
+                        <option value="Kelas 9">Kelas 9 (JHS)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label>
+                    <select id="reg-gender" class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none bg-white cursor-pointer relative z-50">
+                        <option value="Putra">Putra</option>
+                        <option value="Putri">Putri</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nomor Punggung</label>
+                        <input type="number" id="reg-nomor" placeholder="Contoh: 23" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Password Akun</label>
+                        <input type="password" id="reg-password" placeholder="Minimal 6 karakter" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Upload Foto Profil Asli (Maksimal 500 KB)</label>
+                    <input type="file" id="reg-foto-file" accept="image/*" required class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm bg-slate-50 focus:outline-none">
+                </div>
+                <button type="submit" id="btn-submit-reg" class="w-full bg-blue-900 text-white font-bold py-2.5 sm:py-3 rounded-xl hover:bg-blue-800 transition shadow text-sm">Kirim Pendaftaran</button>
+            </form>
+        </section>
+
+        <!-- TAB LOGIN & DASHBOARD PRIBADI -->
+        <section id="tab-login" class="tab-content space-y-4 max-w-xl mx-auto bg-white p-5 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200">
+            <div id="login-form-wrapper">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Login Akun Atlet</h2>
+                <p class="text-slate-500 text-xs sm:text-sm mb-4 sm:mb-6">Masukkan nama terdaftar dan password untuk melihat level dan kartu anggota profesional.</p>
+                
+                <div id="login-alert" class="hidden mb-3 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium"></div>
+
+                <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="login-nama" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Password</label>
+                        <input type="password" id="login-password" required class="w-full px-3 py-2 sm:px-4 sm:py-2 border rounded-xl text-xs sm:text-sm focus:outline-none">
+                    </div>
+                    <button type="submit" id="btn-login" class="w-full bg-blue-900 text-white font-bold py-2.5 sm:py-3 rounded-xl hover:bg-blue-800 transition shadow text-sm">Masuk ke Portal Saya</button>
+                </form>
+            </div>
+
+            <!-- DASHBOARD PERSONAL & ID CARD -->
+            <div id="personal-dashboard" class="hidden space-y-4 sm:space-y-6">
+                <div id="admin-notification-box" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 sm:p-4 rounded-xl shadow-sm">
+                    <div class="flex items-start">
+                        <div class="text-amber-500 text-lg sm:text-xl mr-3"><i class="fa-solid fa-bullhorn"></i></div>
+                        <div>
+                            <h4 class="text-xs sm:text-sm font-bold text-amber-800">Pemberitahuan dari Pelatih / Admin</h4>
+                            <p class="text-[11px] sm:text-xs text-amber-700 mt-0.5 sm:mt-1" id="notification-text">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 sm:space-x-4 border-b pb-4 sm:pb-6">
+                    <img id="user-profile-img" src="" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-yellow-400 shadow">
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-800" id="user-display-name">-</h3>
+                        <p class="text-slate-500 text-[11px] sm:text-xs" id="user-display-meta">-</p>
+                        <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold" id="user-display-status">-</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800 text-xs sm:text-sm">Kartu Anggota Resmi</h4>
+                        <button onclick="downloadIDCard()" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow hover:bg-emerald-700 transition">
+                            <i class="fa-solid fa-download mr-1"></i> Download ID Card
+                        </button>
+                    </div>
+
+                    <div id="member-card-box" class="bg-gradient-to-br from-blue-900 via-blue-950 to-slate-900 text-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-xl relative overflow-hidden border border-blue-800">
+                        <div class="absolute -right-6 -bottom-6 text-blue-800 text-8xl sm:text-9xl opacity-15 pointer-events-none"><i class="fa-solid fa-basketball"></i></div>
+                        <div class="flex justify-between items-start mb-3 sm:mb-4 relative z-10">
+                            <div>
+                                <p class="text-[9px] sm:text-[10px] text-yellow-400 font-bold uppercase tracking-widest">Official Member Card</p>
+                                <h4 class="text-sm sm:text-base font-extrabold tracking-wide">TURSINA BASKETBALL</h4>
+                            </div>
+                            <span class="bg-yellow-400 text-blue-950 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-black shadow" id="card-no-punggung">-</span>
+                        </div>
+                        <div class="flex items-center justify-between relative z-10">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <img id="card-img" src="" class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover border-2 border-yellow-400 shadow">
+                                <div>
+                                    <h5 class="font-bold text-sm sm:text-base" id="card-name">-</h5>
+                                    <p class="text-[11px] sm:text-xs text-blue-200" id="card-category">-</p>
+                                    <p class="text-[11px] sm:text-xs text-yellow-300 font-semibold mt-0.5" id="card-level">Level: -</p>
+                                    <p class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-circle-check"></i> Terverifikasi</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-1.5 rounded-lg shadow flex flex-col items-center justify-center">
+                                <div id="qrcode-container"></div>
+                                <span class="text-[8px] sm:text-[9px] text-slate-700 font-mono mt-1 font-bold">Scan Profile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="logout()" class="text-red-600 text-xs sm:text-sm font-semibold hover:underline block pt-2"><i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar Akun</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-8 sm:mt-12 py-4 sm:py-6 text-center text-xs sm:text-sm text-slate-500">
+        <p>&copy; 2026 TURSINA BASKETBALL CLUB.</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-yellow-400', 'font-semibold');
+                btn.classList.add('text-white');
+            });
+            const activeNavBtn = document.getElementById('nav-' + tabId);
+            if (activeNavBtn) activeNavBtn.classList.add('text-yellow-400', 'font-semibold');
+            const activeMobileNavBtn = document.getElementById('nav-m-' + tabId);
+            if (activeMobileNavBtn) activeMobileNavBtn.classList.add('text-yellow-400', 'font-semibold');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            loadPublicData();
+        };
+
+        function loadPublicData() {
+            fetch(SCRIPT_URL + "?action=getPublicData")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.siteIcon) {
+                        document.getElementById('dynamic-favicon').href = data.siteIcon;
+                        document.getElementById('header-icon').src = data.siteIcon;
+                    }
+
+                    const container = document.getElementById('atlet-grouped-container');
+                    container.innerHTML = '';
+
+                    if (!data.atlet || data.atlet.length === 0) {
+                        container.innerHTML = `<p class="p-4 text-center text-slate-400 text-sm">Belum ada atlet yang disetujui admin.</p>`;
+                        document.getElementById('stat-total-atlet').innerText = "0 Orang";
+                    } else {
+                        const groups = { "Newcomer": [], "Lower": [], "Upper": [], "JHS": [] };
+
+                        data.atlet.forEach(a => {
+                            let lvl = a.level || "Newcomer";
+                            if (!groups[lvl]) groups[lvl] = [];
+                            groups[lvl].push(a);
+                        });
+
+                        document.getElementById('stat-total-atlet').innerText = data.atlet.length + " Orang";
+
+                        const levelOrder = ["Newcomer", "Lower", "Upper", "JHS"];
+                        const levelTitles = {
+                            "Newcomer": "Level Newcomer (Kelas 1-3 Dasar)",
+                            "Lower": "Level Lower",
+                            "Upper": "Level Upper (Kelas 4-6)",
+                            "JHS": "Level JHS (Kelas 7-9)"
+                        };
+                        const levelColors = {
+                            "Newcomer": "bg-blue-50 text-blue-800 border-blue-200",
+                            "Lower": "bg-purple-50 text-purple-800 border-purple-200",
+                            "Upper": "bg-emerald-50 text-emerald-800 border-emerald-200",
+                            "JHS": "bg-amber-50 text-amber-800 border-amber-200"
+                        };
+
+                        levelOrder.forEach(lvl => {
+                            if (groups[lvl] && groups[lvl].length > 0) {
+                                let badgeStyle = "bg-slate-100 text-slate-700";
+                                if(lvl === 'Newcomer') badgeStyle = "bg-blue-100 text-blue-700";
+                                else if(lvl === 'Lower') badgeStyle = "bg-purple-100 text-purple-700";
+                                else if(lvl === 'Upper') badgeStyle = "bg-emerald-100 text-emerald-700";
+                                else if(lvl === 'JHS') badgeStyle = "bg-amber-100 text-amber-700";
+
+                                let rowsHtml = '';
+                                groups[lvl].forEach(a => {
+                                    rowsHtml += `
+                                        <tr class="border-b hover:bg-slate-50">
+                                            <td class="p-2.5 sm:p-3 font-medium flex items-center space-x-2 sm:space-x-3">
+                                                <img src="${a.foto}" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-300">
+                                                <span class="text-xs sm:text-sm">${a.nama}</span>
+                                            </td>
+                                            <td class="p-2.5 sm:p-3"><span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${badgeStyle}">${a.level}</span></td>
+                                            <td class="p-2.5 sm:p-3 text-xs sm:text-sm">${a.kategori}</td>
+                                            <td class="p-2.5 sm:p-3 text-xs sm:text-sm">${a.gender}</td>
+                                            <td class="p-2.5 sm:p-3 font-bold text-blue-900 text-xs sm:text-sm">#${a.nomor}</td>
+                                        </tr>
+                                    `;
+                                });
+
+                                container.innerHTML += `
+                                    <div class="border rounded-xl sm:rounded-2xl overflow-hidden shadow-sm">
+                                        <div class="px-4 py-2.5 sm:px-5 sm:py-3 font-bold text-xs sm:text-sm border-b flex justify-between items-center ${levelColors[lvl]}">
+                                            <span><i class="fa-solid fa-layer-group mr-2"></i> ${levelTitles[lvl]}</span>
+                                            <span class="text-[11px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white shadow-sm font-semibold">${groups[lvl].length} Atlet</span>
+                                        </div>
+                                        <div class="overflow-x-auto bg-white">
+                                            <table class="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr class="bg-slate-50 text-slate-600 text-[10px] sm:text-xs uppercase font-semibold border-b">
+                                                        <th class="p-2.5 sm:p-3">Nama Atlet</th>
+                                                        <th class="p-2.5 sm:p-3">Level Kelas</th>
+                                                        <th class="p-2.5 sm:p-3">Kategori</th>
+                                                        <th class="p-2.5 sm:p-3">Gender</th>
+                                                        <th class="p-2.5 sm:p-3">No Punggung</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="text-xs sm:text-sm text-slate-700">
+                                                    ${rowsHtml}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+
+                    const stafContainer = document.getElementById('staf-container');
+                    stafContainer.innerHTML = '';
+                    if (data.staf) {
+                        document.getElementById('stat-total-staf').innerText = data.staf.length + " Orang";
+                        data.staf.forEach(s => {
+                            stafContainer.innerHTML += `
+                                <div class="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 text-center">
+                                    <img src="${s.foto}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto object-cover mb-3 sm:mb-4 border-4 border-blue-100 shadow">
+                                    <h3 class="font-bold text-base sm:text-lg text-slate-800">${s.nama}</h3>
+                                    <p class="text-blue-600 text-xs sm:text-sm font-semibold">${s.jabatan}</p>
+                                </div>
+                            `;
+                        });
+                    }
+                })
+                .catch(err => console.error("Gagal memuat data:", err));
+        }
+
+        function handleRegister(e) {
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            const btn = document.getElementById('btn-submit-reg');
+            const alertBox = document.getElementById('reg-alert');
+            const fileInput = document.getElementById('reg-foto-file');
+
+            if (fileInput.files.length === 0) {
+                alert("Silakan pilih foto terlebih dahulu.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (file.size > 500 * 1024) {
+                alertBox.classList.remove('hidden');
+                alertBox.className = "p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-red-100 text-red-700";
+                alertBox.innerText = "❌ Ukuran foto terlalu besar! Maksimal ukuran foto adalah 500 KB.";
+                return;
+            }
+
+            btn.innerText = "Mengirim Data...";
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                let ttlInput = document.getElementById('reg-ttl').value.trim();
+                let parts = ttlInput.split(',');
+
+                const payload = {
+                    action: "register",
+                    payload: {
+                        nama: document.getElementById('reg-nama').value.trim(),
+                        tempatLahir: parts[0] ? parts[0].trim() : '',
+                        tanggalLahir: parts[1] ? parts[1].trim() : '',
+                        kategori: document.getElementById('reg-kategori').value,
+                        gender: document.getElementById('reg-gender').value,
+                        nomor: document.getElementById('reg-nomor').value.trim(),
+                        password: document.getElementById('reg-password').value,
+                        fotoBase64: uploadEvent.target.result
+                    }
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    alertBox.classList.remove('hidden');
+                    if (res.status === "success") {
+                        alertBox.className = "p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-emerald-100 text-emerald-700";
+                        alertBox.innerText = "✅ " + res.message;
+                        document.getElementById('form-pendaftaran').reset();
+                        loadPublicData();
+                    } else {
+                        alertBox.className = "p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-red-100 text-red-700";
+                        alertBox.innerText = "❌ " + res.message;
+                    }
+                })
+                .catch(err => {
+                    alertBox.classList.remove('hidden');
+                    alertBox.className = "p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-red-100 text-red-700";
+                    alertBox.innerText = "❌ Gagal terhubung ke server.";
+                })
+                .finally(() => {
+                    btn.innerText = "Kirim Pendaftaran";
+                    btn.disabled = false;
+                });
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function handleLogin(e) {
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const alertBox = document.getElementById('login-alert');
+
+            const payload = {
+                action: "login",
+                payload: {
+                    nama: document.getElementById('login-nama').value.trim(),
+                    password: document.getElementById('login-password').value.trim()
+                }
+            };
+
+            btn.innerText = "Memeriksa...";
+            btn.disabled = true;
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === "success") {
+                    alertBox.classList.add('hidden');
+                    showPersonalDashboard(res.atlet);
+                } else {
+                    alertBox.classList.remove('hidden');
+                    alertBox.className = "mb-3 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-red-100 text-red-700";
+                    alertBox.innerText = "❌ " + res.message;
+                }
+            })
+            .catch(err => {
+                alertBox.classList.remove('hidden');
+                alertBox.className = "mb-3 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium bg-red-100 text-red-700";
+                alertBox.innerText = "❌ Gagal terhubung ke server.";
+            })
+            .finally(() => {
+                btn.innerText = "Masuk ke Portal Saya";
+                btn.disabled = false;
+            });
+        }
+
+        function showPersonalDashboard(atlet) {
+            document.getElementById('login-form-wrapper').classList.add('hidden');
+            document.getElementById('personal-dashboard').classList.remove('hidden');
+
+            document.getElementById('user-profile-img').src = atlet.foto;
+            document.getElementById('user-display-name').innerText = atlet.nama;
+            document.getElementById('user-display-meta').innerText = `${atlet.kategori} | ${atlet.gender} | No. Punggung: #${atlet.nomor}`;
+            
+            const statusBadge = document.getElementById('user-display-status');
+            if (atlet.status === "Terverifikasi" || atlet.status === "Aktif") {
+                statusBadge.className = "inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-700";
+                statusBadge.innerText = "Status: Terverifikasi";
+            } else {
+                statusBadge.className = "inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-700";
+                statusBadge.innerText = "Status: Menunggu Verifikasi";
+            }
+
+            if (atlet.pemberitahuan) {
+                document.getElementById('admin-notification-box').classList.remove('hidden');
+                document.getElementById('notification-text').innerText = atlet.pemberitahuan;
+            } else {
+                document.getElementById('admin-notification-box').classList.add('hidden');
+            }
+
+            // Populate Member Card
+            document.getElementById('card-no-punggung').innerText = "#" + atlet.nomor;
+            document.getElementById('card-img').src = atlet.foto;
+            document.getElementById('card-name').innerText = atlet.nama;
+            document.getElementById('card-category').innerText = atlet.kategori + " (" + atlet.gender + ")";
+            document.getElementById('card-level').innerText = "Level: " + (atlet.level || "Newcomer");
+
+            // Generate QR Code
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: `TURSINA-${atlet.nomor}-${atlet.nama}`,
+                width: 64,
+                height: 64,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        function logout() {
+            document.getElementById('form-login').reset();
+            document.getElementById('personal-dashboard').classList.add('hidden');
+            document.getElementById('login-form-wrapper').classList.remove('hidden');
+        }
+
+        function downloadIDCard() {
+            const cardBox = document.getElementById('member-card-box');
+            html2canvas(cardBox, { scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `ID_Card_${document.getElementById('card-name').innerText}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
